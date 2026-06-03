@@ -1,0 +1,15 @@
+React is 4 layer architecture
+
+1) Ui /components ,pages
+:-styling
+
+2) Hook /hooks
+:- use to manage state and api
+
+3) State /context
+:- Stores data after fetching from backend via api
+
+4)API /services
+It deals with communication between backend and frontend
+the   routes which we created in backend must have to communicate with frontend 
+so that exat data is visible
