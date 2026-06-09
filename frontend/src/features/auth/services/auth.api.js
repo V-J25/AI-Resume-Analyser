@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000", // If we do not creaate this axios.create
+  baseURL: "https://ai-resume-analyser-xci6.onrender.com", // If we do not creaate this axios.create
   // Then we have to repeatedly write base url in
   // out url and withcredential part also
   withCredentials: true,
