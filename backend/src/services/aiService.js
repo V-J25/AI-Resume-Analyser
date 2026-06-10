@@ -226,23 +226,12 @@ Do not include any markdown, explanation, or extra top-level fields. Output must
 };
 
 async function generatePdfFromHtml(htmlContent) {
-  console.log("Chrome Path:", process.env.PUPPETEER_EXECUTABLE_PATH);
-
   const browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-    ],
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
-
   const page = await browser.newPage();
-
-  await page.setContent(htmlContent, {
-    waitUntil: "networkidle0",
-  });
+  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
   const pdfBuffer = await page.pdf({
     format: "A4",
