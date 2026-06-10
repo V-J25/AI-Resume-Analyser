@@ -225,8 +225,6 @@ Do not include any markdown, explanation, or extra top-level fields. Output must
   };
 };
 
-import puppeteer from "puppeteer";
-
 async function generatePdfFromHtml(htmlContent) {
   console.log("Chrome Path:", process.env.PUPPETEER_EXECUTABLE_PATH);
 
