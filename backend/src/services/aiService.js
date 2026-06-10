@@ -8,8 +8,7 @@ const GEMINI_API_KEY = process.env.GOOGLE_GENAI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 const interviewReportSchema = z.object({
-  matchScore: z
-    .coerce
+  matchScore: z.coerce
     .number()
     .min(0)
     .max(100)
@@ -71,8 +70,7 @@ const interviewReportSchema = z.object({
   preparationPlan: z
     .array(
       z.object({
-        day: z
-          .coerce
+        day: z.coerce
           .number()
           .describe("The day number in the preparation plan, starting from 1"),
         focus: z
@@ -227,13 +225,26 @@ Do not include any markdown, explanation, or extra top-level fields. Output must
   };
 };
 
+import puppeteer from "puppeteer";
+
 async function generatePdfFromHtml(htmlContent) {
+  console.log("Chrome Path:", process.env.PUPPETEER_EXECUTABLE_PATH);
+
   const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+    ],
   });
+
   const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+  await page.setContent(htmlContent, {
+    waitUntil: "networkidle0",
+  });
 
   const pdfBuffer = await page.pdf({
     format: "A4",
