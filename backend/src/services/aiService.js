@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 dotenv.config({ path: new URL("../../.env", import.meta.url) });
 
 const GEMINI_API_KEY = process.env.GOOGLE_GENAI_API_KEY;
@@ -226,28 +227,53 @@ Do not include any markdown, explanation, or extra top-level fields. Output must
 };
 
 async function generatePdfFromHtml(htmlContent) {
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-  const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+  const isProduction = process.env.NODE_ENV === "production";
 
-  const pdfBuffer = await page.pdf({
-    format: "A4",
-    margin: {
-      top: "20mm",
-      bottom: "20mm",
-      left: "15mm",
-      right: "15mm",
-    },
-  });
+  const localChromePaths = {
+    win32: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    darwin: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    linux: "/usr/bin/google-chrome",
+  };
 
-  await browser.close();
+  let browser;
+  try {
+    if (isProduction) {
+      // Render / cloud — uses bundled Chromium from @sparticuz/chromium
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+        defaultViewport: chromium.defaultViewport,
+      });
+    } else {
+      // Local development — uses your installed Chrome
+      browser = await puppeteer.launch({
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        executablePath:
+          process.env.CHROME_PATH || localChromePaths[process.platform],
+        headless: "new",
+      });
+    }
 
-  return pdfBuffer;
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20mm",
+        bottom: "20mm",
+        left: "15mm",
+        right: "15mm",
+      },
+    });
+
+    return pdfBuffer;
+  } finally {
+    if (browser) await browser.close(); // closes even if an error occurs
+  }
 }
-
 export const generateInterviewResumepdf = async function generateResumePdf({
   resume,
   selfDescription,
