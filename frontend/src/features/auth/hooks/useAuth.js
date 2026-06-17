@@ -10,8 +10,8 @@ export const useAuth = () => {
     try {
       const data = await login({ email, password });
 
-      setuser(data.user); //data le ander smaan ayega jo abhi api call lgayi react
-      // react mein saman ayega backend se vo user bhi degi to data ke ander user ayega
+      setuser(data.user); //data ke ander smaan ayega jo abhi api call lgayi react
+      // react mein saman ayega backend se vo user bhi dega to data ke ander user ayega
       return true;
     } catch (err) {
       console.log(err);
