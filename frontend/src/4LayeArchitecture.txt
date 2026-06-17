@@ -12,4 +12,4 @@ React is 4 layer architecture
 4)API /services
 It deals with communication between backend and frontend
 the   routes which we created in backend must have to communicate with frontend 
-so that exat data is visible
+so that exact data is visible
