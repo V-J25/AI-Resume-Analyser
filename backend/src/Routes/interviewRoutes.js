@@ -3,9 +3,11 @@ const router = express.Router();
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { interviewController } from "../controller/interviewController.js";
 import { upload } from "../middleware/multer.js";
+import { rateLimiter } from "../middleware/ratelimitMiddleware.js";
 router.post(
   "/",
   authMiddleware.authUser,
+  rateLimiter.reportGenerationLimiter,
   upload.single("resume"),
   interviewController.generateInterviewReportController,
 );
@@ -33,6 +35,7 @@ router.get(
 router.post(
   "/resume/pdf/:interviewReportId",
   authMiddleware.authUser,
+  rateLimiter.resumePdfLimiter,
   interviewController.generateResumePdfController,
 );
 
